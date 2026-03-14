@@ -179,7 +179,7 @@
           <li>UC Santa Cruz <span>CS &amp; Philosophy</span></li>
           <li>Graduating <span>May 2026</span></li>
           <li>Location <span>Santa Cruz, CA</span></li>
-         </ul>
+          <ul class="sidebar-list">
           <li>Cañada College <span>Computer Science</span></li>
           <li>Graduated <span>June 2023</span></li>
           <li>Location <span>Redwood City, CA</span></li>
@@ -425,8 +425,20 @@ function showPage(id) {
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   document.getElementById('nav-' + id).classList.add('active');
+  window.location.hash = id;
   window.scrollTo(0, 0);
 }
+
+function loadFromHash() {
+  const hash = window.location.hash.replace('#', '') || 'home';
+  const validPages = ['home', 'about', 'experience', 'projects', 'resume'];
+  const id = validPages.includes(hash) ? hash : 'home';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+}
+
+window.addEventListener('load', loadFromHash);
+window.addEventListener('hashchange', loadFromHash);
 </script>
-</body>
-</html>
