@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alsu — Product & Program Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0D1F2D; --navy-mid: #1A3347; --slate: #4A6274; --mist: #C8D8E4;
+    --cream: #F5F1EB; --ivory: #FAF8F5; --gold: #B8934A; --gold-light: #D4AA6A;
+    --white: #FFFFFF; --text-primary: #0D1F2D; --text-secondary: #4A6274;
+    --text-muted: #7A96A6; --border: rgba(13, 31, 45, 0.12);
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--ivory); color: var(--text-primary); min-height: 100vh; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(250, 248, 245, 0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 48px; height: 64px;
+  }
+  .nav-logo { font-family: 'Libre Baskerville', serif; font-size: 18px; color: var(--navy); letter-spacing: 0.02em; cursor: pointer; }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a { font-size: 13px; font-weight: 500; color: var(--text-secondary); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; cursor: pointer; }
+  .nav-links a:hover, .nav-links a.active { color: var(--navy); }
+  .nav-links a.active { border-bottom: 1.5px solid var(--gold); padding-bottom: 2px; }
+  .page { display: none; padding-top: 64px; min-height: 100vh; }
+  .page.active { display: block; }
+  #page-home { display: none; background: var(--ivory); }
+  #page-home.active { display: grid; }
+  .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 64px); }
+  .hero-left { display: flex; flex-direction: column; justify-content: center; padding: 80px 64px 80px 80px; border-right: 1px solid var(--border); }
+  .hero-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+  .hero-name { font-family: 'Libre Baskerville', serif; font-size: clamp(44px, 5vw, 64px); line-height: 1.1; color: var(--navy); margin-bottom: 24px; }
+  .hero-name em { font-style: italic; color: var(--gold); }
+  .hero-desc { font-size: 16px; font-weight: 300; line-height: 1.75; color: var(--text-secondary); max-width: 420px; margin-bottom: 40px; }
+  .hero-cta { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary { background: var(--navy); color: var(--white); padding: 12px 28px; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; border: none; cursor: pointer; transition: background 0.2s; }
+  .btn-primary:hover { background: var(--navy-mid); }
+  .btn-secondary { background: transparent; color: var(--navy); padding: 12px 28px; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; border: 1.5px solid var(--navy); cursor: pointer; transition: all 0.2s; }
+  .btn-secondary:hover { background: var(--navy); color: var(--white); }
+  .hero-right { display: flex; flex-direction: column; justify-content: center; padding: 80px 80px 80px 64px; background: var(--cream); }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border); border: 1px solid var(--border); margin-bottom: 48px; }
+  .stat-cell { background: var(--cream); padding: 28px 24px; }
+  .stat-num { font-family: 'Libre Baskerville', serif; font-size: 36px; color: var(--navy); line-height: 1; margin-bottom: 6px; }
+  .stat-label { font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .skills-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .skill-tag { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px; border: 1px solid var(--mist); color: var(--slate); background: var(--white); }
+  #page-about { background: var(--ivory); }
+  .page-header { border-bottom: 1px solid var(--border); padding: 64px 80px 48px; background: var(--cream); }
+  .page-header-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+  .page-header h1 { font-family: 'Libre Baskerville', serif; font-size: 42px; color: var(--navy); line-height: 1.15; }
+  .page-content { padding: 64px 80px; max-width: 1100px; }
+  .about-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 80px; }
+  .about-bio p { font-size: 16px; font-weight: 300; line-height: 1.8; color: var(--text-secondary); margin-bottom: 24px; }
+  .about-bio p strong { color: var(--navy); font-weight: 500; }
+  .about-sidebar h3 { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .sidebar-list { list-style: none; margin-bottom: 40px; }
+  .sidebar-list li { font-size: 14px; font-weight: 300; color: var(--text-secondary); padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+  .sidebar-list li span { color: var(--navy); font-weight: 500; font-size: 13px; }
+  #page-experience { background: var(--ivory); }
+  .timeline { padding: 0 80px 64px; }
+  .timeline-item { display: grid; grid-template-columns: 200px 1fr; gap: 48px; padding: 48px 0; border-bottom: 1px solid var(--border); }
+  .timeline-item:last-child { border-bottom: none; }
+  .timeline-date { font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); padding-top: 4px; }
+  .timeline-company { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .timeline-title { font-family: 'Libre Baskerville', serif; font-size: 22px; color: var(--navy); margin-bottom: 12px; }
+  .timeline-desc { font-size: 15px; font-weight: 300; line-height: 1.75; color: var(--text-secondary); margin-bottom: 16px; }
+  .timeline-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .timeline-tag { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; background: var(--cream); color: var(--slate); border: 1px solid var(--mist); }
+  #page-projects { background: var(--ivory); }
+  .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border); }
+  .project-card { background: var(--ivory); padding: 48px 40px; cursor: pointer; transition: background 0.2s; }
+  .project-card:hover { background: var(--cream); }
+  .project-num { font-family: 'Libre Baskerville', serif; font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+  .project-title { font-family: 'Libre Baskerville', serif; font-size: 24px; color: var(--navy); margin-bottom: 12px; line-height: 1.2; }
+  .project-subtitle { font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+  .project-desc { font-size: 14px; font-weight: 300; line-height: 1.75; color: var(--text-secondary); margin-bottom: 24px; }
+  .project-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; border-top: 1px solid var(--border); }
+  .project-tech { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+  .project-arrow { font-size: 16px; color: var(--gold); }
+  #page-resume { background: var(--ivory); }
+  .resume-download { padding: 32px 80px; background: var(--navy); display: flex; align-items: center; justify-content: space-between; }
+  .resume-download p { font-size: 14px; color: var(--mist); font-weight: 300; }
+  .btn-download { background: var(--gold); color: var(--white); padding: 10px 24px; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; border: none; cursor: pointer; transition: background 0.2s; }
+  .btn-download:hover { background: var(--gold-light); }
+  .resume-sections { padding: 48px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+  .resume-section h2 { font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid var(--gold); }
+  .resume-entry { margin-bottom: 28px; }
+  .resume-entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+  .resume-entry h3 { font-size: 15px; font-weight: 500; color: var(--navy); }
+  .resume-entry-date { font-size: 12px; color: var(--text-muted); font-weight: 300; white-space: nowrap; }
+  .resume-entry-company { font-size: 13px; color: var(--gold); font-weight: 500; margin-bottom: 8px; }
+  .resume-entry ul { list-style: none; padding: 0; }
+  .resume-entry ul li { font-size: 13px; font-weight: 300; line-height: 1.65; color: var(--text-secondary); padding-left: 16px; position: relative; margin-bottom: 4px; }
+  .resume-entry ul li::before { content: '—'; position: absolute; left: 0; color: var(--gold); font-size: 11px; }
+  footer { background: var(--navy); padding: 40px 80px; display: flex; justify-content: space-between; align-items: center; }
+  footer p { font-size: 13px; color: var(--mist); font-weight: 300; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mist); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">Alsu</div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')" class="active" id="nav-home">Home</a></li>
+    <li><a onclick="showPage('about')" id="nav-about">About</a></li>
+    <li><a onclick="showPage('experience')" id="nav-experience">Experience</a></li>
+    <li><a onclick="showPage('projects')" id="nav-projects">Projects</a></li>
+    <li><a onclick="showPage('resume')" id="nav-resume">Resume</a></li>
+  </ul>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-left">
+      <p class="hero-eyebrow">Product &amp; Program Management</p>
+      <h1 class="hero-name">Alsu<br><em>Connecting teams,<br>delivering product.</em></h1>
+      <p class="hero-desc">CS &amp; Philosophy student at UC Santa Cruz, graduating May 2026. I bridge technical and business stakeholders to ship products that matter — from enterprise events at Salesforce World Tour to PM externships and fintech operations.</p>
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="showPage('experience')">View Experience</button>
+        <button class="btn-secondary" onclick="showPage('resume')">Download Resume</button>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="stats-grid">
+        <div class="stat-cell"><div class="stat-num">3+</div><div class="stat-label">Industries</div></div>
+        <div class="stat-cell"><div class="stat-num">5+</div><div class="stat-label">Roles</div></div>
+        <div class="stat-cell"><div class="stat-num">UC</div><div class="stat-label">Santa Cruz '26</div></div>
+        <div class="stat-cell"><div class="stat-num">APM</div><div class="stat-label">Seeking '26</div></div>
+      </div>
+      <div class="skills-list">
+        <span class="skill-tag">Cross-functional coordination</span>
+        <span class="skill-tag">Stakeholder alignment</span>
+        <span class="skill-tag">Requirements gathering</span>
+        <span class="skill-tag">Product strategy</span>
+        <span class="skill-tag">Event operations</span>
+        <span class="skill-tag">Agile</span>
+        <span class="skill-tag">SQL</span>
+        <span class="skill-tag">User research</span>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>© 2026 Alsu · Santa Cruz, CA</p>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/alsujennings/" target="_blank">LinkedIn</a>
+      <a href="https://github.com/alajenni" target="_blank">GitHub</a>
+      <a onclick="showPage('resume')" style="cursor:pointer;">Resume</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ABOUT -->
+<div id="page-about" class="page">
+  <div class="page-header">
+    <p class="page-header-eyebrow">Get to know me</p>
+    <h1>About</h1>
+  </div>
+  <div class="page-content">
+    <div class="about-grid">
+      <div class="about-bio">
+        <p>I'm a <strong>Computer Science and Philosophy student</strong> at UC Santa Cruz (graduating May 2026), pursuing APM and TPM internships where I can bridge technical teams with business stakeholders to build meaningful products.</p>
+        <p>My path has been anything but linear — and I think that's a feature, not a bug. I've coordinated large-scale enterprise conferences at Moscone Center, managed customer relationships at Bank of America, and explored consumer product thinking through a <strong>BeReal PM externship</strong> via Accenture × Girls Who Code.</p>
+        <p>What ties it all together is a consistent thread: <strong>end-to-end execution</strong>. Whether I'm wrangling logistics for a 10,000-person event, gathering requirements from stakeholders, or synthesizing user insights into product decisions — I care about making things actually work.</p>
+        <p>Outside of work and school, I'm drawn to questions about consciousness, memory, and identity — the same curiosity that makes me think hard about why people use products the way they do.</p>
+      </div>
+      <div class="about-sidebar">
+        <h3>Education</h3>
+        <ul class="sidebar-list">
+          <li>UC Santa Cruz <span>CS &amp; Philosophy</span></li>
+          <li>Graduating <span>May 2026</span></li>
+          <li>Location <span>Santa Cruz, CA</span></li>
+        </ul>
+        <h3>Currently Seeking</h3>
+        <ul class="sidebar-list">
+          <li>Role Type <span>APM / TPM Intern</span></li>
+          <li>Start <span>Summer 2026</span></li>
+          <li>Open to <span>On-site / Hybrid</span></li>
+        </ul>
+        <h3>Links</h3>
+        <ul class="sidebar-list">
+          <li>LinkedIn <span><a href="https://www.linkedin.com/in/alsujennings/" target="_blank" style="color: var(--gold); text-decoration: none;">alsujennings</a></span></li>
+          <li>GitHub <span><a href="https://github.com/alajenni" target="_blank" style="color: var(--gold); text-decoration: none;">alajenni</a></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>© 2026 Alsu · Santa Cruz, CA</p>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/alsujennings/" target="_blank">LinkedIn</a>
+      <a href="https://github.com/alajenni" target="_blank">GitHub</a>
+    </div>
+  </footer>
+</div>
+
+<!-- EXPERIENCE -->
+<div id="page-experience" class="page">
+  <div class="page-header">
+    <p class="page-header-eyebrow">Where I've been</p>
+    <h1>Experience</h1>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-date">2024 — Present</div>
+      <div>
+        <p class="timeline-company">Legends Global · Moscone Center, SF</p>
+        <h2 class="timeline-title">Event Operations Supervisor</h2>
+        <p class="timeline-desc">Coordinated large-scale enterprise conferences — including Salesforce World Tour and Workday events — managing cross-functional logistics, vendor alignment, and real-time problem-solving for crowds of thousands. Supervised front-line staff, ensured SLA compliance, and served as the operational point-of-contact for day-of execution.</p>
+        <div class="timeline-tags">
+          <span class="timeline-tag">Cross-functional coordination</span>
+          <span class="timeline-tag">Stakeholder management</span>
+          <span class="timeline-tag">Operations</span>
+          <span class="timeline-tag">Leadership</span>
+        </div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">2024</div>
+      <div>
+        <p class="timeline-company">Accenture × Girls Who Code</p>
+        <h2 class="timeline-title">PM Extern — BeReal</h2>
+        <p class="timeline-desc">Participated in a structured PM externship program, applying product thinking to BeReal's consumer social experience. Conducted user research, developed product specs, and presented feature recommendations to program leads, focusing on engagement and retention.</p>
+        <div class="timeline-tags">
+          <span class="timeline-tag">Product management</span>
+          <span class="timeline-tag">User research</span>
+          <span class="timeline-tag">Feature scoping</span>
+          <span class="timeline-tag">Consumer tech</span>
+        </div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">2023 — 2024</div>
+      <div>
+        <p class="timeline-company">Bank of America</p>
+        <h2 class="timeline-title">Relationship Banker</h2>
+        <p class="timeline-desc">Managed client portfolios and financial product recommendations in a high-volume branch environment. Built trust through consistent follow-through, gathered client needs to match appropriate solutions, and coordinated across internal teams to resolve complex account issues.</p>
+        <div class="timeline-tags">
+          <span class="timeline-tag">Client relations</span>
+          <span class="timeline-tag">Requirements gathering</span>
+          <span class="timeline-tag">Fintech</span>
+          <span class="timeline-tag">Sales</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>© 2026 Alsu · Santa Cruz, CA</p>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/alsujennings/" target="_blank">LinkedIn</a>
+      <a href="https://github.com/alajenni" target="_blank">GitHub</a>
+    </div>
+  </footer>
+</div>
+
+<!-- PROJECTS -->
+<div id="page-projects" class="page">
+  <div class="page-header">
+    <p class="page-header-eyebrow">What I've built</p>
+    <h1>Projects</h1>
+  </div>
+  <div style="padding: 48px 80px 64px;">
+    <div class="projects-grid" style="border: 1px solid var(--border);">
+      <div class="project-card">
+        <p class="project-num">01</p>
+        <p class="project-subtitle">Product Strategy</p>
+        <h3 class="project-title">BeReal Retention Feature</h3>
+        <p class="project-desc">Designed and scoped a product feature to improve daily active user retention for BeReal, grounded in user interviews and behavioral analysis. Delivered a full PRD with success metrics.</p>
+        <div class="project-footer">
+          <span class="project-tech">PRD · User Research · Figma</span>
+          <span class="project-arrow">→</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <p class="project-num">02</p>
+        <p class="project-subtitle">Operations &amp; Systems</p>
+        <h3 class="project-title">Event Coordination Playbook</h3>
+        <p class="project-desc">Developed a repeatable operations playbook for large-scale tech conferences, covering pre-event planning, day-of execution protocols, and post-event retrospectives used across Moscone events.</p>
+        <div class="project-footer">
+          <span class="project-tech">Process design · Ops · Documentation</span>
+          <span class="project-arrow">→</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <p class="project-num">03</p>
+        <p class="project-subtitle">CS + Philosophy</p>
+        <h3 class="project-title">Memory &amp; Confabulation Research</h3>
+        <p class="project-desc">Academic research exploring the intersection of cognitive psychology and identity — investigating how confabulation shapes self-narrative, with implications for AI-generated content and human trust.</p>
+        <div class="project-footer">
+          <span class="project-tech">Research · Cognitive psych · Writing</span>
+          <span class="project-arrow">→</span>
+        </div>
+      </div>
+      <div class="project-card" style="background: var(--cream);">
+        <p class="project-num">04</p>
+        <p class="project-subtitle">Coming soon</p>
+        <h3 class="project-title" style="color: var(--text-muted);">More on the way</h3>
+        <p class="project-desc" style="color: var(--text-muted);">Currently building out this section. Check back soon for additional case studies and side projects.</p>
+        <div class="project-footer"><span class="project-tech" style="color: var(--mist);">—</span></div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>© 2026 Alsu · Santa Cruz, CA</p>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/alsujennings/" target="_blank">LinkedIn</a>
+      <a href="https://github.com/alajenni" target="_blank">GitHub</a>
+    </div>
+  </footer>
+</div>
+
+<!-- RESUME -->
+<div id="page-resume" class="page">
+  <div class="page-header">
+    <p class="page-header-eyebrow">Full background</p>
+    <h1>Resume</h1>
+  </div>
+  <div class="resume-download">
+    <p>PDF version available for download — last updated March 2026.</p>
+    <button class="btn-download">Download PDF</button>
+  </div>
+  <div class="resume-sections">
+    <div>
+      <div class="resume-section">
+        <h2>Experience</h2>
+        <div class="resume-entry">
+          <div class="resume-entry-header">
+            <h3>Event Operations Supervisor</h3>
+            <span class="resume-entry-date">2024–Present</span>
+          </div>
+          <p class="resume-entry-company">Legends Global · Moscone Center</p>
+          <ul>
+            <li>Coordinated logistics for Salesforce &amp; Workday enterprise events (10K+ attendees)</li>
+            <li>Managed cross-functional teams and vendor relations day-of</li>
+            <li>Served as primary operational point-of-contact for event execution</li>
+          </ul>
+        </div>
+        <div class="resume-entry">
+          <div class="resume-entry-header">
+            <h3>PM Extern — BeReal</h3>
+            <span class="resume-entry-date">2024</span>
+          </div>
+          <p class="resume-entry-company">Accenture × Girls Who Code</p>
+          <ul>
+            <li>Conducted user research and synthesized behavioral insights</li>
+            <li>Wrote product requirements doc for a retention-focused feature</li>
+            <li>Presented recommendations to program leadership</li>
+          </ul>
+        </div>
+        <div class="resume-entry">
+          <div class="resume-entry-header">
+            <h3>Relationship Banker</h3>
+            <span class="resume-entry-date">2023–2024</span>
+          </div>
+          <p class="resume-entry-company">Bank of America</p>
+          <ul>
+            <li>Managed financial product recommendations for client portfolios</li>
+            <li>Coordinated across internal teams to resolve account issues</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="resume-section">
+        <h2>Education</h2>
+        <div class="resume-entry">
+          <div class="resume-entry-header">
+            <h3>BS Computer Science &amp; Philosophy</h3>
+            <span class="resume-entry-date">2026</span>
+          </div>
+          <p class="resume-entry-company">UC Santa Cruz</p>
+          <ul><li>Focus areas: cognitive science, systems design, ethics of tech</li></ul>
+        </div>
+      </div>
+      <div class="resume-section" style="margin-top: 40px;">
+        <h2>Skills</h2>
+        <div class="resume-entry">
+          <ul>
+            <li>Cross-functional coordination &amp; stakeholder alignment</li>
+            <li>Product requirements &amp; roadmap planning</li>
+            <li>User research &amp; competitive analysis</li>
+            <li>Agile / Scrum methodology</li>
+            <li>SQL, Python, basic data analysis</li>
+            <li>Figma, Notion, JIRA, Confluence</li>
+          </ul>
+        </div>
+      </div>
+      <div class="resume-section" style="margin-top: 40px;">
+        <h2>Contact</h2>
+        <div class="resume-entry">
+          <ul>
+            <li>Santa Cruz, CA (open to relocation)</li>
+            <li><a href="https://www.linkedin.com/in/alsujennings/" target="_blank" style="color: var(--gold); text-decoration: none;">linkedin.com/in/alsujennings</a></li>
+            <li><a href="https://github.com/alajenni" target="_blank" style="color: var(--gold); text-decoration: none;">github.com/alajenni</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>© 2026 Alsu · Santa Cruz, CA</p>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/alsujennings/" target="_blank">LinkedIn</a>
+      <a href="https://github.com/alajenni" target="_blank">GitHub</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
